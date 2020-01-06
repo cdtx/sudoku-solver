@@ -4,7 +4,7 @@ sudoku: main.o
 	g++ main.o -o sudoku
 
 main.o: main.cpp
-	g++ -c main.cpp -o main.o
+	g++ -c -g main.cpp -o main.o
 
 test_%: sudoku
 	cat $@ | ./sudoku
