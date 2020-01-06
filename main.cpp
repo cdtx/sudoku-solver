@@ -14,9 +14,39 @@ public:
     int value = 0;
     int candidates[SIZE];
     Cell(char &str_value) {
-        // Initialize all candidates to 1 (all value possibles at start)
-        fill_n(this->candidates, SIZE, 1);
-        this->value = str_value - '0';
+        int value;
+
+        value = str_value - '0';
+        if (value != 0) {
+            this->fix_value(value);
+        }
+        else {
+            // Initialize all candidates to 1 (all value possibles at start)
+            this->value = value;
+            fill_n(this->candidates, SIZE, 1);
+        }
+    }
+    int count_candidates(void) {
+        int res = 0;
+        for(int i=0 ; i<SIZE ; i++) {
+            if (this->candidates[i] == 1) {
+                res++;
+            }
+        }
+        return res;
+    }
+    int possible(int value) {
+        return this->candidates[value-1];
+    }
+    void fix_value(int value) {
+        if (this->value != 0) {
+            cout << "ERROR!" << endl;
+        }
+        this->value = value;
+        for(int i=0 ; i<SIZE ; i++) {
+            // No more candidates
+            this->candidates[i] = 0;
+        }
     }
     // Useful for debug purposes
     void display_candidates(void) {
@@ -52,6 +82,50 @@ public:
             }
         }
         return nReduce;
+
+    }
+
+    int fix(void) {
+        // A cell has only one candidate -> fix it
+        for(int i=0 ; i<SIZE ; i++) {
+            Cell *cell = this->cells[i];
+            if (cell->count_candidates() == 1) {
+                for(int j=0 ; j<SIZE ; j++) {
+                    if (cell->candidates[j] == 1) {
+                        cell->fix_value(j+1);
+                        return 1;
+                    }
+                }
+            }
+        }
+
+        // A cell is the only one with a possibility -> fix it
+        int possibles[SIZE];
+        int nPossibles;
+        // For each value from 1 to 9, test all cells in the block to see how many can host the value.
+        // If only one can host, bingo !
+        for(int value=0 ; value<SIZE ; value++) {
+            fill_n(possibles, SIZE, 0);
+            nPossibles = 0;
+            for(int i=0 ; i<SIZE ; i++) {
+                Cell *cell = this->cells[i];
+                if (cell->possible(value+1)) {
+                    possibles[i] = 1;
+                    nPossibles++;
+                }
+            }
+            if (nPossibles == 1) {
+                for(int j=0 ; j<SIZE ; j++) {
+                    if(possibles[j] == 1) {
+                        this->cells[j]->fix_value(value+1);
+                        return 1;
+                    }
+                }
+            }
+        }
+
+
+        return 0;
     }
 
     // Useful for debug purposes
@@ -125,6 +199,17 @@ public:
         for (int i=0 ; i<3*SIZE ; i++) {
             nReduce += this->blocks[i]->reduce();
         }
+        return nReduce;
+    }
+    int fix(void) {
+        int nFix = 0;
+        for (int i=0 ; i<3*SIZE ; i++) {
+            nFix = this->blocks[i]->fix();
+            if(nFix > 0) {
+                break;
+            }
+        }
+        return nFix;
     }
 
     void display(void) {
@@ -139,7 +224,7 @@ public:
 
 int main()
 {
-    int nReduce, nFix;    // Number of operations in a reduce/fix step
+    int nOp;
 
     Grid *grid = new Grid();
     grid->fill();
@@ -147,8 +232,14 @@ int main()
     grid->display();
     cout << endl;
     
-    grid->cells[0]->display_candidates();
-    nReduce = grid->reduce();
-    grid->cells[0]->display_candidates();
+    do {
+        nOp = 0;
+        nOp += grid->reduce();
+        nOp += grid->fix();
+    } while(nOp > 0);
+
+    cout << "Grid :" << endl;
+    grid->display();
+    cout << endl;
 }
 

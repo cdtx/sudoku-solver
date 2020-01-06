@@ -48,4 +48,13 @@ Quite scolar job, as usual picking values in an array is an index mess...
 Wrote the *reduce* method in the **Block** class.
 In order to not embed a List library, I choosed to not use dynamic length lists, instead every cell's candidates list is static, size=9, and values from 1 to 9 is a value 0/1 at the index given by the value.
 (1111111111 for all values possibles, 0111111111 for the value 1 no more a candidate)
+The reduce procedure works for lines and squares.
+I quick tested it by watching the first cell's candidates after a run 
+
+### Step
+Implemented the fix method as imagined above.
+It *almost worked* quickly. Then I losed some time figuring out why the same value appeared sometime twice on the same line. Until I understood I have to stop the *fix* process imediately a value is set, and revaluate all the candidates.
+I now can see the test 01 working fine.
+
+
 
