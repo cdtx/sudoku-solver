@@ -42,4 +42,10 @@ So I choose to implement this and see later if improvemensts are necessary.
 
 ### Step
 I wrote the classes and the code that parses the input, spreads values into **Cells**, and create **Block**
-Quite scolar job, picking values in an array is always a mess...
+Quite scolar job, as usual picking values in an array is an index mess...
+
+### Step
+Wrote the *reduce* method in the **Block** class.
+In order to not embed a List library, I choosed to not use dynamic length lists, instead every cell's candidates list is static, size=9, and values from 1 to 9 is a value 0/1 at the index given by the value.
+(1111111111 for all values possibles, 0111111111 for the value 1 no more a candidate)
+
